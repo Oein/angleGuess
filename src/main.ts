@@ -1,13 +1,18 @@
+import createButton from "./buttons";
 import Leaderboard from "./leaderboardSystem";
 import notifier from "./notifier";
 
 import "./style.css";
 
+let mode = (new URL(window.location.href).searchParams.get("mode") ||
+  "easy") as "easy" | "hard" | "superhard";
+
 const LDBoard = Leaderboard({
   getGameRunning() {
     return false;
   },
-  kvAPIKey: "mfgcdevp",
+  kvAPIKey:
+    mode == "hard" ? "t0pf5v7s" : mode == "superhard" ? "stolvc7d" : "mfgcdevp",
   notifier: notifier,
 });
 
@@ -25,6 +30,8 @@ const two = new Two({
   smoothing: true,
   type: "SVGRenderer",
 });
+
+let angleSplitBy = mode === "hard" ? 5 : mode === "superhard" ? 1 : 10;
 
 // Attach renderer to DOM
 container.style.width = "200px";
@@ -88,14 +95,17 @@ let score = 0;
 let ans = -1;
 
 function newGame() {
-  ans = Math.floor((Math.random() * 359) / 10) * 10;
+  ans = Math.floor(Math.random() * (360 / angleSplitBy)) * angleSplitBy;
   drawAngle(ans);
 }
 
 function setTitle() {
   let t = document.getElementById("title");
   if (!t) return;
-  t.textContent = `지금 까지 ${score}개!` + (plname ? " (" + plname + ")" : "");
+  t.textContent =
+    `지금 까지 ${score}개!` +
+    (plname ? " (" + plname + ")" : "") +
+    ` [${mode}]`;
 }
 
 document.getElementById("setname")?.addEventListener("click", () => {
@@ -120,6 +130,7 @@ document.getElementById("setname")?.addEventListener("click", () => {
 });
 
 newGame();
+setTitle();
 
 function ss() {
   console.log("Save score", plname, score);
@@ -159,3 +170,36 @@ document.getElementById("frm")?.addEventListener("submit", (e) => {
   e.stopPropagation();
   onGuess();
 });
+
+if (mode != "easy") {
+  createButton({
+    text: "이지 모드",
+    bgColor: "#4CAF50",
+    fgColor: "#fff",
+    onClick() {
+      window.location.href = window.location.pathname + "?mode=easy";
+    },
+  });
+}
+
+if (mode != "hard") {
+  createButton({
+    text: "하드 모드",
+    bgColor: "#f39c12",
+    fgColor: "#fff",
+    onClick() {
+      window.location.href = window.location.pathname + "?mode=hard";
+    },
+  });
+}
+
+if (mode != "superhard") {
+  createButton({
+    text: "슈퍼 하드 모드",
+    bgColor: "#e74a3b",
+    fgColor: "#fff",
+    onClick() {
+      window.location.href = window.location.pathname + "?mode=superhard";
+    },
+  });
+}
