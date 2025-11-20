@@ -12,7 +12,11 @@ const LDBoard = Leaderboard({
     return false;
   },
   kvAPIKey:
-    mode == "hard" ? "t0pf5v7s" : mode == "superhard" ? "stolvc7d" : "mfgcdevp",
+    mode == "hard"
+      ? "angle-hard"
+      : mode == "superhard"
+      ? "angle-superhard"
+      : "angle-easy",
   notifier: notifier,
 });
 
